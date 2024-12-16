@@ -22,24 +22,26 @@ export default function Pokemon() {
 
       <Text style={styles.footerText}>Evoluções</Text>
 
-      <View style={styles.footer}>
-        <View style={styles.footerCardContainer}>
-          <View style={styles.footerCard}>
+      <View style={styles.cardContainer}>
+        <View style={styles.card}>
+          <View style={styles.cardBottom}>
             <Image source={require("../assets/bulbasaur.png")} />
           </View>
-          <Text>Bulbasaur</Text>
+          <Text>bulbasaur</Text>
         </View>
-        <View style={styles.footerCardContainer}>
-          <View style={styles.footerCard}>
+
+        <View style={styles.card}>
+          <View style={styles.cardBottom}>
             <Image source={require("../assets/bulbasaur.png")} />
           </View>
-          <Text>Bulbasaur</Text>
+          <Text>bulbasaur</Text>
         </View>
-        <View style={styles.footerCardContainer}>
-          <View style={styles.footerCard}>
+
+        <View style={styles.card}>
+          <View style={styles.cardBottom}>
             <Image source={require("../assets/bulbasaur.png")} />
           </View>
-          <Text>Bulbasaur</Text>
+          <Text>bulbasaur</Text>
         </View>
       </View>
     </View>
@@ -61,7 +63,6 @@ export const styles = StyleSheet.create({
     elevation: 10,
     borderRadius: 6,
   },
-
   namePokemon: {
     marginVertical: 20,
     fontSize: 25,
@@ -87,21 +88,19 @@ export const styles = StyleSheet.create({
     fontSize: 25,
     fontWeight: "semibold",
   },
-  footer: {
+  card: {
+    flex: 1,
+  },
+  cardContainer: {
     flexDirection: "row",
-    gap: 20,
-    alignItems: "center",
-    justifyContent: "space-between",
   },
-  footerCard: {
-    backgroundColor: "#F6F6F6",
-    borderWidth: 1,
-    borderColor: "#F2F2F2",
+  cardBottom: {
+    width: 100,
+    height: 100,
     borderRadius: 4,
-    padding: 15,
-  },
-  footerCardContainer: {
-    width: 88,
-    height: 88,
+    backgroundColor: "#F6F6F6",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 10,
   },
 });

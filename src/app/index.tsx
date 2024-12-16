@@ -1,4 +1,5 @@
 import {
+  FlatList,
   Image,
   Pressable,
   StatusBar,
@@ -9,8 +10,39 @@ import {
 } from "react-native";
 import { CaretRight, Gear, MagnifyingGlass } from "phosphor-react-native";
 import { Link } from "expo-router";
+import { useEffect, useState } from "react";
+import { fetchPokemons, fetchPokemonsByName } from "./services/api";
+import { PokemonListItem } from "../types/pokemon";
 
 export default function Index() {
+  const [search, setSearch] = useState("");
+  const [pokemon, setPokemon] = useState<PokemonListItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadPokemons = async () => {
+      const data = await fetchPokemons();
+      console.log(data);
+      const fetchPokemonsWithPhotos: PokemonListItem[] = await Promise.all(
+        data.map(async (item: { name: string; url: string }) => {
+          const response = await fetch(item.url);
+          const details = await response.json();
+          return {
+            name: item.name,
+            image: details.sprites.front_default,
+          };
+        })
+      );
+
+      setPokemon(fetchPokemonsWithPhotos);
+      setLoading(false);
+    };
+
+    loadPokemons();
+  }, []);
+
+  if (loading) return <Text>Loading...</Text>;
+
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" />
@@ -30,46 +62,46 @@ export default function Index() {
           style={styles.input}
           placeholder="Pesquisar"
           placeholderTextColor="#FFF"
+          value={search}
+          onChangeText={setSearch}
         />
       </View>
 
       <View style={styles.content}>
         <Text style={styles.contentTitle}>Todos os pokemons</Text>
 
-        <View style={styles.card}>
-          <View style={styles.cardInfoLeft}>
-            <Image source={require("./assets/bulbasaur.png")} />
-            <View>
-              <Text>#001</Text>
-              <Text>Bulbasaur</Text>
-            </View>
-          </View>
+        <FlatList
+          showsVerticalScrollIndicator={false}
+          keyExtractor={(item) => item.name}
+          data={pokemon}
+          renderItem={({ item, index }) => (
+            <View style={styles.card}>
+              <View style={styles.cardInfoLeft}>
+                <Image
+                  style={{ width: 80, height: 50 }}
+                  source={{ uri: item.image }}
+                />
+                <View>
+                  <Text>#{index + 1}</Text>
+                  <Text>{item.name}</Text>
+                </View>
+              </View>
 
-          <CaretRight size={32} />
-        </View>
-
-        <View style={styles.card}>
-          <View style={styles.cardInfoLeft}>
-            <Image source={require("./assets/bulbasaur.png")} />
-            <View>
-              <Text>#001</Text>
-              <Text>Bulbasaur</Text>
+              <CaretRight size={32} />
             </View>
-          </View>
-          <Link
-            href={{
-              pathname: "/pokemon/[id]",
-              params: { id: "bacon" },
-            }}
-            style={styles.link}
-          >
-            <CaretRight size={32} />
-          </Link>
-        </View>
+          )}
+        />
       </View>
 
       <View style={styles.footer}>
-        <Pressable style={styles.footerButton}>
+        <Pressable
+          disabled={search ? false : true}
+          onPress={() => console.log("Oi")}
+          style={[
+            styles.footerButton,
+            search ? "" : { backgroundColor: "#DADADA" },
+          ]}
+        >
           <Text style={styles.footerButtonText}>Conhecer um pokemon</Text>
         </Pressable>
       </View>
@@ -132,17 +164,17 @@ export const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     alignItems: "center",
     padding: 15,
-    elevation: 5,
     justifyContent: "space-between",
     borderRadius: 4,
     marginBottom: 15,
+    borderWidth: 1,
+    borderColor: "#F2F2F2",
   },
   cardInfoLeft: {
     flexDirection: "row",
     gap: 5,
     alignItems: "center",
   },
-  link: {},
   footer: {
     backgroundColor: "#FFF",
     borderTopWidth: 1,
