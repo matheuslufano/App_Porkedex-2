@@ -1,4 +1,5 @@
 import {
+  Dimensions,
   FlatList,
   Image,
   Pressable,
@@ -9,15 +10,24 @@ import {
   View,
 } from "react-native";
 import { CaretRight, Gear, MagnifyingGlass } from "phosphor-react-native";
-import { Link } from "expo-router";
 import { useEffect, useState } from "react";
-import { fetchPokemons, fetchPokemonsByName } from "./services/api";
+import { fetchPokemons } from "./services/api";
 import { PokemonListItem } from "../types/pokemon";
+import Modal from "react-native-modal";
+import Pokemon from "./pokemon/[id]";
+
+const { height } = Dimensions.get("window");
 
 export default function Index() {
   const [search, setSearch] = useState("");
   const [pokemon, setPokemon] = useState<PokemonListItem[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const [isToggleModal, setIsToggleModal] = useState(false);
+
+  const toggleModal = () => {
+    setIsToggleModal(!isToggleModal);
+  };
 
   useEffect(() => {
     const loadPokemons = async () => {
@@ -75,20 +85,22 @@ export default function Index() {
           keyExtractor={(item) => item.name}
           data={pokemon}
           renderItem={({ item, index }) => (
-            <View style={styles.card}>
-              <View style={styles.cardInfoLeft}>
-                <Image
-                  style={{ width: 80, height: 50 }}
-                  source={{ uri: item.image }}
-                />
-                <View>
-                  <Text>#{index + 1}</Text>
-                  <Text>{item.name}</Text>
+            <Pressable onPress={toggleModal}>
+              <View style={styles.card}>
+                <View style={styles.cardInfoLeft}>
+                  <Image
+                    style={{ width: 80, height: 50 }}
+                    source={{ uri: item.image }}
+                  />
+                  <View>
+                    <Text>#{index + 1}</Text>
+                    <Text>{item.name}</Text>
+                  </View>
                 </View>
-              </View>
 
-              <CaretRight size={32} />
-            </View>
+                <CaretRight size={32} />
+              </View>
+            </Pressable>
           )}
         />
       </View>
@@ -105,6 +117,18 @@ export default function Index() {
           <Text style={styles.footerButtonText}>Conhecer um pokemon</Text>
         </Pressable>
       </View>
+
+      <Modal
+        isVisible={isToggleModal}
+        onBackdropPress={toggleModal}
+        swipeDirection="down"
+        onSwipeComplete={toggleModal}
+        style={styles.modal}
+      >
+        <View style={styles.modalContent}>
+          <Pokemon />
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -192,5 +216,16 @@ export const styles = StyleSheet.create({
   },
   footerButtonText: {
     color: "#FFF",
+  },
+  modal: {
+    justifyContent: "flex-end", // Alinha o modal na parte inferior
+    margin: 0, // Remove as margens padrão
+  },
+  modalContent: {
+    height: height * 0.8, // Define a altura do modal (50% da tela)
+    backgroundColor: "white",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 20,
   },
 });
