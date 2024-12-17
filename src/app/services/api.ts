@@ -16,7 +16,7 @@ export const fetchPokemons = async (limit = 20, offset = 0) => {
 
 export const fetchPokemonsByName = async (name: string) => {
   try {
-    const response = await api.get(`/pokemon/${name}}`);
+    const response = await api.get(`/pokemon/${name}`);
     return response.data;
   } catch (error) {
     console.log("Erro a buscar este pokemon" + error);

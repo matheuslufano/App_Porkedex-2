@@ -14,7 +14,7 @@ import { useEffect, useState } from "react";
 import { fetchPokemons } from "./services/api";
 import { PokemonListItem } from "../types/pokemon";
 import Modal from "react-native-modal";
-import Pokemon from "./pokemon/[id]";
+import Pokemon from "./pokemon/[name]";
 
 const { height } = Dimensions.get("window");
 
@@ -24,15 +24,18 @@ export default function Index() {
   const [loading, setLoading] = useState(true);
 
   const [isToggleModal, setIsToggleModal] = useState(false);
+  const [selectedPokemon, setSelectedPokemon] = useState<string | null>(null);
 
-  const toggleModal = () => {
+  const toggleModal = (pokemonName?: string) => {
+    if (pokemonName) {
+      setSelectedPokemon(pokemonName); // Armazena o Pokémon selecionado
+    }
     setIsToggleModal(!isToggleModal);
   };
 
   useEffect(() => {
     const loadPokemons = async () => {
       const data = await fetchPokemons();
-      console.log(data);
       const fetchPokemonsWithPhotos: PokemonListItem[] = await Promise.all(
         data.map(async (item: { name: string; url: string }) => {
           const response = await fetch(item.url);
@@ -85,7 +88,7 @@ export default function Index() {
           keyExtractor={(item) => item.name}
           data={pokemon}
           renderItem={({ item, index }) => (
-            <Pressable onPress={toggleModal}>
+            <Pressable onPress={() => toggleModal(item.name)}>
               <View style={styles.card}>
                 <View style={styles.cardInfoLeft}>
                   <Image
@@ -120,13 +123,13 @@ export default function Index() {
 
       <Modal
         isVisible={isToggleModal}
-        onBackdropPress={toggleModal}
+        onBackdropPress={() => toggleModal()}
         swipeDirection="down"
-        onSwipeComplete={toggleModal}
+        onSwipeComplete={() => toggleModal()}
         style={styles.modal}
       >
         <View style={styles.modalContent}>
-          <Pokemon />
+          <Pokemon name={selectedPokemon} />
         </View>
       </Modal>
     </View>
