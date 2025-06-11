@@ -83,42 +83,65 @@ export default function Index() {
       <View style={styles.content}>
         <Text style={styles.contentTitle}>Todos os pokemons</Text>
 
-        <FlatList
-          showsVerticalScrollIndicator={false}
-          keyExtractor={(item) => item.name}
-          data={pokemon}
-          renderItem={({ item, index }) => (
-            <Pressable onPress={() => toggleModal(item.name)}>
-              <View style={styles.card}>
-                <View style={styles.cardInfoLeft}>
-                  <Image
-                    style={{ width: 80, height: 50 }}
-                    source={{ uri: item.image }}
-                  />
-                  <View>
-                    <Text>#{index + 1}</Text>
-                    <Text>{item.name}</Text>
-                  </View>
+      <FlatList
+        showsVerticalScrollIndicator={false}
+        keyExtractor={(item) => item.name}
+        data={pokemon.filter(p =>
+          p.name.toLowerCase().includes(search.toLowerCase())
+        )}
+        renderItem={({ item, index }) => (
+          <Pressable onPress={() => toggleModal(item.name)}>
+            <View style={styles.card}>
+              <View style={styles.cardInfoLeft}>
+                <Image
+                  style={{ width: 100, height: 100 }}
+                  source={{ uri: item.image }}
+                />
+                <View>
+                  <Text>#{index + 1}</Text>
+                  <Text>{item.name}</Text>
                 </View>
-
-                <CaretRight size={32} />
               </View>
-            </Pressable>
-          )}
-        />
+              <CaretRight size={32} />
+            </View>
+          </Pressable>
+        )}
+      />
       </View>
 
       <View style={styles.footer}>
-        <Pressable
-          disabled={search ? false : true}
-          onPress={() => console.log("Oi")}
-          style={[
-            styles.footerButton,
-            search ? "" : { backgroundColor: "#DADADA" },
-          ]}
-        >
-          <Text style={styles.footerButtonText}>Conhecer um pokemon</Text>
-        </Pressable>
+      <Pressable
+        disabled={!search}
+        onPress={async () => {
+          const found = pokemon.find(p =>
+            p.name.toLowerCase() === search.toLowerCase()
+          );
+
+          if (found) {
+            toggleModal(found.name);
+          } else {
+            try {
+              // Faz requisição direta à API
+              const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${search.toLowerCase()}`);
+              if (!response.ok) throw new Error("Pokémon não encontrado");
+              const data = await response.json();
+
+              // Abre o modal com o nome do Pokémon buscado
+              toggleModal(data.name);
+            } catch (err) {
+              alert("Pokémon não encontrado.");
+            }
+          }
+        }}
+        style={[
+          styles.footerButton,
+          !search && { backgroundColor: "#DADADA" },
+        ]}
+      >
+        <Text style={styles.footerButtonText}>Conhecer um pokemon</Text>
+      </Pressable>
+
+
       </View>
 
       <Modal
@@ -139,7 +162,7 @@ export default function Index() {
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FF8575",
+    backgroundColor: "#f13921",
   },
   header: {
     paddingTop: 10,
@@ -162,7 +185,7 @@ export const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: "row",
     gap: 15,
-    backgroundColor: "#F98E80",
+    backgroundColor: "#d78e8582",
     paddingVertical: 10,
     borderRadius: 16,
     paddingHorizontal: 10,
@@ -175,7 +198,7 @@ export const styles = StyleSheet.create({
     color: "#FFF",
   },
   content: {
-    backgroundColor: "#FFF",
+    backgroundColor: "#eaeaea",
     flex: 1,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
@@ -190,10 +213,10 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     backgroundColor: "#FFFFFF",
     alignItems: "center",
-    padding: 15,
+    padding: 20,
     justifyContent: "space-between",
-    borderRadius: 4,
-    marginBottom: 15,
+    borderRadius: 5,
+    marginBottom: 20,
     borderWidth: 1,
     borderColor: "#F2F2F2",
   },

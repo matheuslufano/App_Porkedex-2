@@ -23,7 +23,13 @@ export default function Pokemon({ name }: PropsParams) {
           const response = await api.get(`/pokemon/${name}`);
           const speciesUrl = response.data.species.url;
 
-          setPokemon(response.data);
+          // Adiciona GIF animado
+          const mainPokemon = {
+            ...response.data,
+            animatedGif: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/animated/${response.data.id}.gif`,
+          };
+
+          setPokemon(mainPokemon);
 
           // Busca a URL da cadeia de evolução
           const speciesResponse = await api.get(speciesUrl);
@@ -39,7 +45,7 @@ export default function Pokemon({ name }: PropsParams) {
               const evoResponse = await api.get(`/pokemon/${evoName}`);
               return {
                 name: evoName,
-                image: evoResponse.data.sprites.front_default,
+                image: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/animated/${evoResponse.data.id}.gif`,
               };
             })
           );
@@ -74,8 +80,8 @@ export default function Pokemon({ name }: PropsParams) {
     <View style={styles.container}>
       <View style={styles.header}>
         <Image
-          source={{ uri: pokemon.sprites.front_default }}
-          style={{ width: 100, height: 100 }}
+          source={{ uri: pokemon.animatedGif }}
+          style={{ width: 150, height: 150 }}
         />
       </View>
 
@@ -122,7 +128,7 @@ export const styles = StyleSheet.create({
     backgroundColor: "#F6F6F6",
     justifyContent: "center",
     alignItems: "center",
-    padding: 50,
+    padding: "auto",
     elevation: 10,
     borderRadius: 6,
   },
