@@ -66,7 +66,7 @@ export default function Index() {
       </View>
 
       <Text style={styles.info}>
-        Encontre seu pokemon pesquisando pelo nome ou por seu Código Pokédex.
+        Encontre seu pokemon pesquisando aqui.
       </Text>
 
       <View style={styles.inputContainer}>
