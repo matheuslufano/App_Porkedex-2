@@ -109,7 +109,7 @@ export default function Pokemon({ name }: PropsParams) {
                 style={{ width: 80, height: 80 }}
               />
             </View>
-            <Text style={{ textAlign: "center" }}>{evo.name}</Text>
+            <Text style={{ textAlign: "center", textTransform: 'capitalize'}}>{evo.name}</Text>
           </View>
         ))}
       </View>
@@ -137,6 +137,7 @@ export const styles = StyleSheet.create({
     fontSize: 25,
     fontWeight: "bold",
     textAlign: "center",
+    textTransform: 'capitalize'
   },
   infoPokemon: {
     flexDirection: "row",
